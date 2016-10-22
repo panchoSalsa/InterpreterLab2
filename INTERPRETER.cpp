@@ -27,6 +27,7 @@ private:
   std::ofstream outFile;
 
   std::vector<std::string> C;
+  std::vector<std::string> Arguments; 
 	int D[DATA_SEG_SIZE];
 	int PC;
   std::string IR;
@@ -133,9 +134,25 @@ INTERPRETER::INTERPRETER(char *sourceFile) {
 
 void INTERPRETER::runProgram() {
   std::cout << "inside runProgram()" << std::endl; 
+  // TODO FETCH-INCREMENT-EXECUTE CYCLE
+ 
+  // while (run_bit) {
+  //     fetch();
+  //     std::cout << IR << std::endl; 
+  //     std::cout << PC << std::endl; 
+  //     incrementPC();
+  //     std::cout << PC << std::endl; 
+  //     execute();
+  // }
 
   fetch();
-  std::cout << IR << std::endl; 
+  // std::cout << IR << std::endl; 
+  // std::cout << PC << std::endl; 
+  incrementPC();
+  // std::cout << PC << std::endl; 
+  execute();
+
+  std::cout << std::endl; 
   // TODO FETCH-INCREMENT-EXECUTE CYCLE
 
   printDataSeg();
@@ -154,14 +171,24 @@ void INTERPRETER::fetch() {
   // TODO
   // The IR is updated with the instruction pointed at by PC; IR=C[PC]
   IR = C.at(PC);
+  curIRIndex = 0; 
 }
 
 void INTERPRETER::incrementPC() {
   // TODO
+  // The PC is incremented to *point* to the next instruction in C; PC = PC+1
+  ++PC;
 }
 
 void INTERPRETER::execute() {
   // TODO
+  // std::cout << IR << std::endl; 
+  parseStatement();
+  // std::cout << "inside execute()" << std::endl; 
+  // std::cout << IR << std::endl; 
+  if (IR == "halt") {
+    run_bit = false; 
+  }
 }
 
 //Output: used in the case of: set write, source
@@ -188,6 +215,8 @@ bool INTERPRETER::accept(char c) {
   if (IR[curIRIndex] == c) {
     curIRIndex++;
     skipWhitespace();
+    std::cout << c;
+    std::cout << " "; 
     return true;
   } else {
     return false;
@@ -200,7 +229,10 @@ bool INTERPRETER::accept(char c) {
  * (non-whitespace) character.
  */
 bool INTERPRETER::accept(const char *s) {
+
+  // std::cout << s ; 
   unsigned s_len = strlen(s);
+  // std::cout << s_len ; 
 
   if (curIRIndex+s_len > IR.length())
     return false;
@@ -213,6 +245,10 @@ bool INTERPRETER::accept(const char *s) {
 
   curIRIndex += s_len;
   skipWhitespace();
+
+  std::cout << s;
+  std::cout << " ";
+  
   return true;
 }
 
@@ -308,6 +344,7 @@ void INTERPRETER::parseNumber() {
   if (IR[curIRIndex] == '0') {
     curIRIndex++;
     skipWhitespace();
+    Arguments.push_back(IR[curIRIndex]);
     return;
   } else if (isdigit(IR[curIRIndex])) {
     while (curIRIndex < IR.length() &&
