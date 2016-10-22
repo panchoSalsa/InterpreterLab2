@@ -1,9 +1,9 @@
 /***************************************
  * INTERPRETER.cpp
  *
- * Student Name: YOUR NAME
- * Student ID: YOUR 8-DIGIT ID
- * UCI Net ID: YOUR UCI-NET ID
+ * Student Name: Francisco Franco
+ * Student ID: 89265601
+ * UCI Net ID: frfranco
  **************************************/
 
 #include <iostream>
@@ -112,11 +112,16 @@ INTERPRETER::INTERPRETER(char *sourceFile) {
 
   // Initialize the SIMPLESEM processor state
   // Initialize the Code segment
+
   while (codeIn.good()) {
     std::string line;
     std::getline(codeIn, line);
     C.push_back(line);
   }
+
+  // ** this is how you read from a vector ** 
+  // for (std::vector<std::string>::const_iterator i = C.begin(); i != C.end(); ++i)
+  //   std::cout << *i << std::endl;
 
   // Initialize the Data segment
   for (int i=0; i<DATA_SEG_SIZE ;i++) {
@@ -127,13 +132,18 @@ INTERPRETER::INTERPRETER(char *sourceFile) {
 }
 
 void INTERPRETER::runProgram() {
+  std::cout << "inside runProgram()" << std::endl; 
 
+  fetch();
+  std::cout << IR << std::endl; 
   // TODO FETCH-INCREMENT-EXECUTE CYCLE
 
   printDataSeg();
 }
 
 void INTERPRETER::printDataSeg() {
+  std::cout << "inside printDataSeg()" << std::endl;
+
   outFile << "Data Segment Contents" << std::endl;
   for(int i=0; i < DATA_SEG_SIZE; i++){
     outFile << i << ": " << D[i] << std::endl;
@@ -142,6 +152,8 @@ void INTERPRETER::printDataSeg() {
 
 void INTERPRETER::fetch() {
   // TODO
+  // The IR is updated with the instruction pointed at by PC; IR=C[PC]
+  IR = C.at(PC);
 }
 
 void INTERPRETER::incrementPC() {
