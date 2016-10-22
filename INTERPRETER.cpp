@@ -345,4 +345,5 @@ int main(int argc, char* argv[]) {
   }
   INTERPRETER i(argv[1]);
   i.runProgram();
+  std::cout << "**end**" << std::endl;
 }
