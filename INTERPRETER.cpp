@@ -338,6 +338,7 @@ void INTERPRETER::syntaxError() {
 }
 
 int main(int argc, char* argv[]) {
+  std::cout << "starting program" << std::endl; 
   if (argc < 2) {
     std::cerr << "init: This program requires an input "
               << "filename as a parameter " << std::endl;
