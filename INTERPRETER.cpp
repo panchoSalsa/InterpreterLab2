@@ -290,11 +290,9 @@ void INTERPRETER::parseSet() {
   std::cerr << "Set" << std::endl;
 
   if (!accept("write")) {
-    std::cout << "**dataFlag is set to true" << std::endl;
     dataFlag = true; 
     parseExpr();
   } else {
-    std::cout << "**writeFlag is set to true" << std::endl;
     writeFlag = true; 
   }
 
@@ -356,6 +354,10 @@ void INTERPRETER::parseFactor() {
     expect(']');
 
     handleRecursion();
+
+    std::cout << "**handled recursion*" << std::endl; 
+    std::cout << "** number: " << number << std::endl; 
+    std::cout << "index: " << dataIndex << std::endl; 
 
   } else if (accept('(')) {
     parseExpr();
@@ -430,43 +432,21 @@ void INTERPRETER::halt() {
 }
 
 void INTERPRETER::destination() {
-  std::cout << "destination()" << std::endl; 
-
   if (dataFlag) {
-    std::cout << "if (dataFlag)" << std::endl; 
+    std::cout << "**dataIndex**" << std::endl; 
     dataIndex = number;
+    std::cout << "dataIndex: " << dataIndex << std::endl; 
     dataFlag = false; 
   }
 }
 
-void INTERPRETER::assign() {
-  std::cout << "assign()" << std::endl; 
+void INTERPRETER::assign() { 
+  std::cout << "**assign()**" << std::endl; 
   if (writeFlag) {
-    std::cout << "if (writeFlag)" << std::endl; 
     write(number);
     writeFlag = false; 
   } 
   else {
-    std::cout << "if (else)" << std::endl; 
-    D[dataIndex] = number;
-  }
-}
-
-void INTERPRETER::processNumber() {
-  std::cout << "processNumber()" << std::endl; 
-  if (dataFlag) {
-    std::cout << "if (dataFlag)" << std::endl; 
-    dataIndex = number;
-    dataFlag = false; 
-  }
-
-  if (writeFlag) {
-    std::cout << "if (writeFlag)" << std::endl; 
-    write(number);
-    writeFlag = false; 
-  } 
-  else {
-    std::cout << "if (else)" << std::endl; 
     D[dataIndex] = number;
   }
 }
