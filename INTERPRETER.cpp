@@ -86,6 +86,10 @@ private:
   void parseNumber();
 
   void syntaxError();
+
+  // my functions 
+
+  void halt();
 };
 
 
@@ -130,6 +134,12 @@ void INTERPRETER::runProgram() {
 
   // TODO FETCH-INCREMENT-EXECUTE CYCLE
 
+  while (run_bit) {
+    fetch();
+    incrementPC();
+    execute();
+  }
+
   printDataSeg();
 }
 
@@ -143,20 +153,22 @@ void INTERPRETER::printDataSeg() {
 void INTERPRETER::fetch() {
   // TODO
   // The IR is updated with the instruction pointed at by PC; IR=C[PC]
+  std::cout << "fetch()" << std::endl; 
   IR = C.at(PC);
   curIRIndex = 0; 
-  // The IR is updated with the instruction pointed at by PC; IR=C[PC]
-  IR = C.at(PC);
 }
 
 void INTERPRETER::incrementPC() {
   // TODO
   // The PC is incremented to *point* to the next instruction in C; PC = PC+1
   ++PC;
+  std::cout << "incrementPC()" << std::endl; 
 }
 
 void INTERPRETER::execute() {
   // TODO
+  std::cout << "excecute()" << std::endl;
+  parseStatement(); 
 }
 
 //Output: used in the case of: set write, source
@@ -239,8 +251,10 @@ void INTERPRETER::skipWhitespace() {
 void INTERPRETER::parseStatement() {
   std::cerr << "Statement" << std::endl;
 
-  if (accept("halt"))
+  if (accept("halt")) {
+    halt();
     return;
+  }
   else if(accept("set"))
     parseSet();
   else if(accept("jumpt"))
@@ -342,6 +356,10 @@ void INTERPRETER::parseJumpt() {
 void INTERPRETER::syntaxError() {
   std::cerr << "Syntax Error!" << std::endl;
   exit(-1);
+}
+
+void INTERPRETER::halt() {
+  run_bit = false; 
 }
 
 int main(int argc, char* argv[]) {
