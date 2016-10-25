@@ -34,6 +34,12 @@ private:
 
   unsigned curIRIndex;
 
+  // my variables
+
+  int dataIndex;
+  bool readFlag = false; 
+  bool dataFlag = false; 
+
   void printDataSeg();
 
   void fetch();
@@ -90,6 +96,7 @@ private:
   // my functions 
 
   void halt();
+  void processNumber(int number);
 };
 
 
@@ -266,13 +273,18 @@ void INTERPRETER::parseStatement() {
 void INTERPRETER::parseSet() {
   std::cerr << "Set" << std::endl;
 
-  if (!accept("write"))
+  if (!accept("write")) {
+    dataFlag = true; 
     parseExpr();
+  }
 
   expect(',');
 
-  if (!accept("read"))
+  if (!accept("read")) {
+    readFlag = true; 
     parseExpr();
+  }
+  std::cout << "after source" << std::endl;
 }
 
 void INTERPRETER::parseExpr() {
@@ -311,22 +323,38 @@ void INTERPRETER::parseFactor() {
 
 void INTERPRETER::parseNumber() {
   std::cerr << "Number" << std::endl;
+
+  int number;  
+
   if (curIRIndex >= IR.length())
     syntaxError();
 
   if (IR[curIRIndex] == '0') {
+    number = 0; 
+
     curIRIndex++;
     skipWhitespace();
+
+    processNumber(number);
+
     return;
   } else if (isdigit(IR[curIRIndex])) {
+    int pos = curIRIndex;
+    int len = 0; 
     while (curIRIndex < IR.length() &&
            isdigit(IR[curIRIndex])) {
+      ++len;
       curIRIndex++;
     }
+    
+    number = std::stoi(IR.substr(pos,len));
+
+    processNumber(number);
+
     skipWhitespace();
   } else {
     syntaxError();
-  }
+  } 
 }
 
 void INTERPRETER::parseJump() {
@@ -360,6 +388,18 @@ void INTERPRETER::syntaxError() {
 
 void INTERPRETER::halt() {
   run_bit = false; 
+}
+
+void INTERPRETER::processNumber(int number) {
+  if (dataFlag) {
+    dataIndex = number;
+    dataFlag = false; 
+  }
+  
+  if (readFlag) {
+    D[dataIndex] = number;
+    readFlag = false; 
+  } 
 }
 
 int main(int argc, char* argv[]) {
