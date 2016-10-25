@@ -1,5 +1,12 @@
+100
 Data Segment Contents
+<<<<<<< HEAD
 0: 0
+||||||| 5ed105b... Revert "set write, D[0] working, now trying recursive D[[0]]"
+0: 10
+=======
+0: 100
+>>>>>>> parent of 5ed105b... Revert "set write, D[0] working, now trying recursive D[[0]]"
 1: 0
 2: 0
 3: 0
