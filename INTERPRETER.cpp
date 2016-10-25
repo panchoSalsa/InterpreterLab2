@@ -36,8 +36,8 @@ private:
 
   // my variables
 
-  int dataIndex;
-  bool readFlag = false; 
+  int dataIndex; 
+  int number;
   bool dataFlag = false;
   bool writeFlag = false;  
   bool indirectAddressingFlag = false; 
@@ -98,7 +98,7 @@ private:
   // my functions 
 
   void halt();
-  void processNumber(int number);
+  void processNumber();
 };
 
 
@@ -286,9 +286,7 @@ void INTERPRETER::parseSet() {
 
   expect(',');
 
-  if (!accept("read")) {
-    std::cout << "**readFlag is set to true" << std::endl;
-    readFlag = true; 
+  if (!accept("read")) { 
     parseExpr();
   } else { 
     if (writeFlag) 
@@ -339,8 +337,6 @@ void INTERPRETER::parseFactor() {
 void INTERPRETER::parseNumber() {
   std::cerr << "Number" << std::endl;
 
-  int number;  
-
   if (curIRIndex >= IR.length())
     syntaxError();
 
@@ -350,7 +346,7 @@ void INTERPRETER::parseNumber() {
     curIRIndex++;
     skipWhitespace();
 
-    processNumber(number);
+    processNumber();
 
     return;
   } else if (isdigit(IR[curIRIndex])) {
@@ -364,7 +360,7 @@ void INTERPRETER::parseNumber() {
     
     number = std::stoi(IR.substr(pos,len));
 
-    processNumber(number);
+    processNumber();
 
     skipWhitespace();
   } else {
@@ -405,33 +401,19 @@ void INTERPRETER::halt() {
   run_bit = false; 
 }
 
-void INTERPRETER::processNumber(int number) {
+void INTERPRETER::processNumber() {
   if (dataFlag) {
     dataIndex = number;
     dataFlag = false; 
   }
-  
-  if (readFlag) {
 
-    if (indirectAddressingFlag) {
-      number = D[number];
-      indirectAddressingFlag = false; 
-    }
-
-
-    if (writeFlag) {
-      write(number);
-      writeFlag = false; 
-    } 
-    else {
-      D[dataIndex] = number;
-      readFlag = false; 
-    }
+  if (writeFlag) {
+    write(number);
+    writeFlag = false; 
+  } 
+  else {
+    D[dataIndex] = number;
   }
-
-
-
-
 }
 
 int main(int argc, char* argv[]) {
