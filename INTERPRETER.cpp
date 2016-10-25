@@ -44,6 +44,7 @@ private:
   int recursionCounter = 0; 
   int total = 0; 
   bool adderMux = false; 
+  bool adderFlag = false; 
 
   void printDataSeg();
 
@@ -319,8 +320,7 @@ void INTERPRETER::parseExpr() {
 
   parseTerm();
 
-  total = number;
-
+  total = number; 
   while (accept('+') || accept('-')) {
     parseTerm();
     
@@ -329,8 +329,9 @@ void INTERPRETER::parseExpr() {
     else
       total -= number;
   } 
+  
   number = total; 
-  total = 0;  
+  total = 0;
 }
 
 void INTERPRETER::parseTerm() {
