@@ -1,4 +1,4 @@
-/***************************************
+s/***************************************
  * INTERPRETER.cpp
  *
  * Student Name: YOUR NAME
@@ -44,6 +44,10 @@ private:
   int total = 0; 
   bool adderMux = false; 
   bool adderFlag = false; 
+  int factor = 0; 
+  bool mult = false; 
+  bool division = false; 
+  bool modulo = false; 
 
   void printDataSeg();
 
@@ -107,6 +111,9 @@ private:
   void destination();
   void handleAddition();
   void handleSubtraction();
+  void handleMultiplication();
+  void handleDivision();
+  void handleModulo();
 };
 
 
@@ -216,7 +223,13 @@ bool INTERPRETER::accept(char c) {
       handleAddition();
     } else if (c == '-') {
       handleSubtraction();
-    }
+    } else if (c == '*') {
+      handleMultiplication();
+    } else if (c == '/') {
+      handleDivision();
+    } else if (c == '%') {
+      handleModulo();
+    } 
 
     return true;
   } else {
@@ -338,8 +351,24 @@ void INTERPRETER::parseTerm() {
 
   parseFactor();
 
-  while (accept('*') || accept('/') || accept('%'))
+  while (accept('*') || accept('/') || accept('%')) {
+    factor = number; 
+
     parseFactor();
+
+    if (mult) {
+      factor *= number; 
+      mult = false; 
+    } else if (division) {
+      factor /= number;
+      division = false; 
+    } else if (modulo) {
+      factor %= number; 
+      modulo = false; 
+    }
+
+    number = factor; 
+  }
 }
 
 void INTERPRETER::parseFactor() {
@@ -363,6 +392,7 @@ void INTERPRETER::parseFactor() {
     parseExpr();
 
     expect(')');
+    
   } else {
     parseNumber();
   }
@@ -464,6 +494,16 @@ void INTERPRETER::handleAddition() {
 
 void  INTERPRETER::handleSubtraction() {
   adderMux = false;  
+}
+
+void INTERPRETER::handleMultiplication() {
+  mult = true; 
+}
+void INTERPRETER::handleDivision() {
+  division = true; 
+}
+void INTERPRETER::handleModulo() {
+  modulo = true; 
 }
 
 int main(int argc, char* argv[]) {
