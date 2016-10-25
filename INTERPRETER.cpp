@@ -185,6 +185,7 @@ void INTERPRETER::write(int source){
 
 //Input: used in the case of: set destination, read
 int INTERPRETER::read() {
+  std::cout << "inside read()" << std::endl; 
   int value;
   inputIn >> value;
   return value;
@@ -283,6 +284,8 @@ void INTERPRETER::parseSet() {
   if (!accept("read")) {
     readFlag = true; 
     parseExpr();
+  } else {
+    D[dataIndex] = INTERPRETER::read();
   }
   std::cout << "after source" << std::endl;
 }

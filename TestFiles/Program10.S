@@ -1,2 +1,2 @@
-set 0, 10
+set 0, read
 halt
