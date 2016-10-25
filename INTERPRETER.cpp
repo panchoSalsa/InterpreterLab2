@@ -42,6 +42,8 @@ private:
   bool writeFlag = false;  
   bool indirectAddressingFlag = false; 
   int recursionCounter = 0; 
+  int total = 0; 
+  bool adderMux = false; 
 
   void printDataSeg();
 
@@ -103,6 +105,8 @@ private:
   void handleRecursion();
   void assign();
   void destination();
+  void handleAddition();
+  void handleSubtraction();
 };
 
 
@@ -208,6 +212,12 @@ bool INTERPRETER::accept(char c) {
   if (IR[curIRIndex] == c) {
     curIRIndex++;
     skipWhitespace();
+    if (c == '+') {
+      handleAddition();
+    } else if (c == '-') {
+      handleSubtraction();
+    }
+
     return true;
   } else {
     return false;
@@ -309,8 +319,18 @@ void INTERPRETER::parseExpr() {
 
   parseTerm();
 
-  while (accept('+') || accept('-'))
+  total = number;
+
+  while (accept('+') || accept('-')) {
     parseTerm();
+    
+    if (adderMux)
+      total += number; 
+    else
+      total -= number;
+  } 
+  number = total; 
+  total = 0;  
 }
 
 void INTERPRETER::parseTerm() {
@@ -460,6 +480,14 @@ void INTERPRETER::handleRecursion() {
   //processNumber();
   recursionCounter = 0; 
   indirectAddressingFlag = false; 
+}
+
+void INTERPRETER::handleAddition() {
+  adderMux = true; 
+}
+
+void  INTERPRETER::handleSubtraction() {
+  adderMux = false;  
 }
 
 int main(int argc, char* argv[]) {

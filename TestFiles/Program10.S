@@ -1,4 +1,5 @@
-set 0, 10
-set 10, 100
-set write, D[D[0]]
+set 0, 2
+set 1, 10
+set 2, 4
+set write, D[1] - D[2]
 halt
