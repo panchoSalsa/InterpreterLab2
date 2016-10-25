@@ -1,4 +1,4 @@
-s/***************************************
+/***************************************
  * INTERPRETER.cpp
  *
  * Student Name: YOUR NAME
@@ -114,6 +114,7 @@ private:
   void handleMultiplication();
   void handleDivision();
   void handleModulo();
+  void processJump(); 
 };
 
 
@@ -295,8 +296,10 @@ void INTERPRETER::parseStatement() {
     parseSet();
   else if(accept("jumpt"))
     parseJumpt();
-  else if(accept("jump"))
+  else if(accept("jump")) {
     parseJump();
+    processJump();
+  }
 }
 
 void INTERPRETER::parseSet() {
@@ -505,6 +508,14 @@ void INTERPRETER::handleDivision() {
 void INTERPRETER::handleModulo() {
   modulo = true; 
 }
+
+
+
+// ****** Jump
+
+void INTERPRETER::processJump() {
+  PC = number; 
+} 
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
