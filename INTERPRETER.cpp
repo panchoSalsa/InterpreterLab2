@@ -1,9 +1,9 @@
 /***************************************
  * INTERPRETER.cpp
  *
- * Student Name: Francisco Franco
- * Student ID: 89265601
- * UCI Net ID: frfranco
+ * Student Name: YOUR NAME
+ * Student ID: YOUR 8-DIGIT ID
+ * UCI Net ID: YOUR UCI-NET ID
  **************************************/
 
 #include <iostream>
@@ -27,11 +27,10 @@ private:
   std::ofstream outFile;
 
   std::vector<std::string> C;
-  std::vector<std::string> Arguments; 
-	int D[DATA_SEG_SIZE];
-	int PC;
+  int D[DATA_SEG_SIZE];
+  int PC;
   std::string IR;
-	bool run_bit;
+  bool run_bit;
 
   unsigned curIRIndex;
 
@@ -44,7 +43,7 @@ private:
   // Output: used in the case of: set write, source
   void write(int source);
 
-	// Input: used in the case of: set destination, read
+  // Input: used in the case of: set destination, read
   int read();
 
   /**
@@ -113,16 +112,11 @@ INTERPRETER::INTERPRETER(char *sourceFile) {
 
   // Initialize the SIMPLESEM processor state
   // Initialize the Code segment
-
   while (codeIn.good()) {
     std::string line;
     std::getline(codeIn, line);
     C.push_back(line);
   }
-
-  // ** this is how you read from a vector ** 
-  // for (std::vector<std::string>::const_iterator i = C.begin(); i != C.end(); ++i)
-  //   std::cout << *i << std::endl;
 
   // Initialize the Data segment
   for (int i=0; i<DATA_SEG_SIZE ;i++) {
@@ -133,34 +127,13 @@ INTERPRETER::INTERPRETER(char *sourceFile) {
 }
 
 void INTERPRETER::runProgram() {
-  std::cout << "inside runProgram()" << std::endl; 
-  // TODO FETCH-INCREMENT-EXECUTE CYCLE
- 
-  // while (run_bit) {
-  //     fetch();
-  //     std::cout << IR << std::endl; 
-  //     std::cout << PC << std::endl; 
-  //     incrementPC();
-  //     std::cout << PC << std::endl; 
-  //     execute();
-  // }
 
-  fetch();
-  // std::cout << IR << std::endl; 
-  // std::cout << PC << std::endl; 
-  incrementPC();
-  // std::cout << PC << std::endl; 
-  execute();
-
-  std::cout << std::endl; 
   // TODO FETCH-INCREMENT-EXECUTE CYCLE
 
   printDataSeg();
 }
 
 void INTERPRETER::printDataSeg() {
-  std::cout << "inside printDataSeg()" << std::endl;
-
   outFile << "Data Segment Contents" << std::endl;
   for(int i=0; i < DATA_SEG_SIZE; i++){
     outFile << i << ": " << D[i] << std::endl;
@@ -172,6 +145,8 @@ void INTERPRETER::fetch() {
   // The IR is updated with the instruction pointed at by PC; IR=C[PC]
   IR = C.at(PC);
   curIRIndex = 0; 
+  // The IR is updated with the instruction pointed at by PC; IR=C[PC]
+  IR = C.at(PC);
 }
 
 void INTERPRETER::incrementPC() {
@@ -182,13 +157,6 @@ void INTERPRETER::incrementPC() {
 
 void INTERPRETER::execute() {
   // TODO
-  // std::cout << IR << std::endl; 
-  parseStatement();
-  // std::cout << "inside execute()" << std::endl; 
-  // std::cout << IR << std::endl; 
-  if (IR == "halt") {
-    run_bit = false; 
-  }
 }
 
 //Output: used in the case of: set write, source
@@ -215,8 +183,6 @@ bool INTERPRETER::accept(char c) {
   if (IR[curIRIndex] == c) {
     curIRIndex++;
     skipWhitespace();
-    std::cout << c;
-    std::cout << " "; 
     return true;
   } else {
     return false;
@@ -229,10 +195,7 @@ bool INTERPRETER::accept(char c) {
  * (non-whitespace) character.
  */
 bool INTERPRETER::accept(const char *s) {
-
-  // std::cout << s ; 
   unsigned s_len = strlen(s);
-  // std::cout << s_len ; 
 
   if (curIRIndex+s_len > IR.length())
     return false;
@@ -245,10 +208,6 @@ bool INTERPRETER::accept(const char *s) {
 
   curIRIndex += s_len;
   skipWhitespace();
-
-  std::cout << s;
-  std::cout << " ";
-  
   return true;
 }
 
@@ -344,7 +303,6 @@ void INTERPRETER::parseNumber() {
   if (IR[curIRIndex] == '0') {
     curIRIndex++;
     skipWhitespace();
-    Arguments.push_back(IR[curIRIndex]);
     return;
   } else if (isdigit(IR[curIRIndex])) {
     while (curIRIndex < IR.length() &&
@@ -387,7 +345,6 @@ void INTERPRETER::syntaxError() {
 }
 
 int main(int argc, char* argv[]) {
-  std::cout << "**start**" << std::endl; 
   if (argc < 2) {
     std::cerr << "init: This program requires an input "
               << "filename as a parameter " << std::endl;
@@ -395,5 +352,5 @@ int main(int argc, char* argv[]) {
   }
   INTERPRETER i(argv[1]);
   i.runProgram();
-  std::cout << "**end**" << std::endl;
 }
+
