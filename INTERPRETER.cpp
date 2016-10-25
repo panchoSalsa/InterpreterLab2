@@ -41,6 +41,7 @@ private:
   bool dataFlag = false;
   bool writeFlag = false;  
   bool indirectAddressingFlag = false; 
+  int recursionCounter = 0; 
 
   void printDataSeg();
 
@@ -99,6 +100,7 @@ private:
 
   void halt();
   void processNumber();
+  void handleRecursion();
 };
 
 
@@ -321,6 +323,7 @@ void INTERPRETER::parseFactor() {
   if (accept("D[")) {
 
     indirectAddressingFlag = true; 
+    ++recursionCounter; 
 
     parseExpr();
 
@@ -345,8 +348,10 @@ void INTERPRETER::parseNumber() {
 
     curIRIndex++;
     skipWhitespace();
-
-    processNumber();
+    if (indirectAddressingFlag) 
+      handleRecursion();
+    else
+      processNumber();
 
     return;
   } else if (isdigit(IR[curIRIndex])) {
@@ -359,8 +364,10 @@ void INTERPRETER::parseNumber() {
     }
     
     number = std::stoi(IR.substr(pos,len));
-
-    processNumber();
+    if (indirectAddressingFlag)
+      handleRecursion();
+    else
+      processNumber();
 
     skipWhitespace();
   } else {
@@ -414,6 +421,14 @@ void INTERPRETER::processNumber() {
   else {
     D[dataIndex] = number;
   }
+}
+
+void INTERPRETER::handleRecursion() {
+  for (int i = 0; i < recursionCounter; i++)
+    number = D[number];
+  processNumber();
+  recursionCounter = 0; 
+  indirectAddressingFlag = false; 
 }
 
 int main(int argc, char* argv[]) {
