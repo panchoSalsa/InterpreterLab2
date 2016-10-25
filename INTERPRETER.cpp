@@ -40,7 +40,6 @@ private:
   int number;
   bool dataFlag = false;
   bool writeFlag = false;  
-  bool indirectAddressingFlag = false; 
   int recursionCounter = 0; 
   int total = 0; 
   bool adderMux = false; 
@@ -320,18 +319,20 @@ void INTERPRETER::parseExpr() {
 
   parseTerm();
 
-  total = number; 
+  //total = number; 
+
   while (accept('+') || accept('-')) {
+    total = number; 
+
     parseTerm();
     
     if (adderMux)
-      total += number; 
+      total += number;
     else
       total -= number;
+
+    number = total; 
   } 
-  
-  number = total; 
-  total = 0;
 }
 
 void INTERPRETER::parseTerm() {
@@ -348,12 +349,14 @@ void INTERPRETER::parseFactor() {
 
   if (accept("D[")) {
 
-    indirectAddressingFlag = true; 
     ++recursionCounter; 
 
     parseExpr();
 
     expect(']');
+
+    handleRecursion();
+
   } else if (accept('(')) {
     parseExpr();
 
@@ -374,10 +377,6 @@ void INTERPRETER::parseNumber() {
 
     curIRIndex++;
     skipWhitespace();
-    if (indirectAddressingFlag) 
-      handleRecursion();
-    // else
-    //   processNumber();
 
     return;
   } else if (isdigit(IR[curIRIndex])) {
@@ -390,10 +389,6 @@ void INTERPRETER::parseNumber() {
     }
     
     number = std::stoi(IR.substr(pos,len));
-    if (indirectAddressingFlag)
-      handleRecursion();
-    // else
-    //   processNumber();
 
     skipWhitespace();
   } else {
@@ -436,6 +431,7 @@ void INTERPRETER::halt() {
 
 void INTERPRETER::destination() {
   std::cout << "destination()" << std::endl; 
+
   if (dataFlag) {
     std::cout << "if (dataFlag)" << std::endl; 
     dataIndex = number;
@@ -478,9 +474,8 @@ void INTERPRETER::processNumber() {
 void INTERPRETER::handleRecursion() {
   for (int i = 0; i < recursionCounter; i++)
     number = D[number];
-  //processNumber();
+
   recursionCounter = 0; 
-  indirectAddressingFlag = false; 
 }
 
 void INTERPRETER::handleAddition() {
