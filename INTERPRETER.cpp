@@ -38,9 +38,7 @@ private:
 
   int dataIndex;
   bool readFlag = false; 
-  bool dataFlag = false;
-  bool writeFlag = false;  
-  bool indirectAddressingFlag = false; 
+  bool dataFlag = false; 
 
   void printDataSeg();
 
@@ -187,6 +185,7 @@ void INTERPRETER::write(int source){
 
 //Input: used in the case of: set destination, read
 int INTERPRETER::read() {
+  std::cout << "inside read()" << std::endl; 
   int value;
   inputIn >> value;
   return value;
@@ -276,27 +275,19 @@ void INTERPRETER::parseSet() {
   std::cerr << "Set" << std::endl;
 
   if (!accept("write")) {
-    std::cout << "**dataFlag is set to true" << std::endl;
     dataFlag = true; 
     parseExpr();
-  } else {
-    std::cout << "**writeFlag is set to true" << std::endl;
-    writeFlag = true; 
   }
 
   expect(',');
 
   if (!accept("read")) {
-    std::cout << "**readFlag is set to true" << std::endl;
     readFlag = true; 
     parseExpr();
-  } else { 
-    if (writeFlag) 
-      write(INTERPRETER::read());
-    else 
-      D[dataIndex] = INTERPRETER::read(); 
-
+  } else {
+    D[dataIndex] = INTERPRETER::read();
   }
+  std::cout << "after source" << std::endl;
 }
 
 void INTERPRETER::parseExpr() {
@@ -321,9 +312,6 @@ void INTERPRETER::parseFactor() {
   std::cerr << "Factor" << std::endl;
 
   if (accept("D[")) {
-
-    indirectAddressingFlag = true; 
-
     parseExpr();
 
     expect(']');
@@ -412,26 +400,9 @@ void INTERPRETER::processNumber(int number) {
   }
   
   if (readFlag) {
-
-    if (indirectAddressingFlag) {
-      number = D[number];
-      indirectAddressingFlag = false; 
-    }
-
-
-    if (writeFlag) {
-      write(number);
-      writeFlag = false; 
-    } 
-    else {
-      D[dataIndex] = number;
-      readFlag = false; 
-    }
-  }
-
-
-
-
+    D[dataIndex] = number;
+    readFlag = false; 
+  } 
 }
 
 int main(int argc, char* argv[]) {
