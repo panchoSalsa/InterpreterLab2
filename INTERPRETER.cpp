@@ -101,6 +101,8 @@ private:
   void halt();
   void processNumber();
   void handleRecursion();
+  void assign();
+  void destination();
 };
 
 
@@ -286,6 +288,7 @@ void INTERPRETER::parseSet() {
     writeFlag = true; 
   }
 
+  destination();
   expect(',');
 
   if (!accept("read")) { 
@@ -297,6 +300,8 @@ void INTERPRETER::parseSet() {
       D[dataIndex] = INTERPRETER::read(); 
 
   }
+
+  assign();
 }
 
 void INTERPRETER::parseExpr() {
@@ -350,8 +355,8 @@ void INTERPRETER::parseNumber() {
     skipWhitespace();
     if (indirectAddressingFlag) 
       handleRecursion();
-    else
-      processNumber();
+    // else
+    //   processNumber();
 
     return;
   } else if (isdigit(IR[curIRIndex])) {
@@ -366,8 +371,8 @@ void INTERPRETER::parseNumber() {
     number = std::stoi(IR.substr(pos,len));
     if (indirectAddressingFlag)
       handleRecursion();
-    else
-      processNumber();
+    // else
+    //   processNumber();
 
     skipWhitespace();
   } else {
@@ -408,17 +413,43 @@ void INTERPRETER::halt() {
   run_bit = false; 
 }
 
-void INTERPRETER::processNumber() {
+void INTERPRETER::destination() {
+  std::cout << "destination()" << std::endl; 
   if (dataFlag) {
+    std::cout << "if (dataFlag)" << std::endl; 
+    dataIndex = number;
+    dataFlag = false; 
+  }
+}
+
+void INTERPRETER::assign() {
+  std::cout << "assign()" << std::endl; 
+  if (writeFlag) {
+    std::cout << "if (writeFlag)" << std::endl; 
+    write(number);
+    writeFlag = false; 
+  } 
+  else {
+    std::cout << "if (else)" << std::endl; 
+    D[dataIndex] = number;
+  }
+}
+
+void INTERPRETER::processNumber() {
+  std::cout << "processNumber()" << std::endl; 
+  if (dataFlag) {
+    std::cout << "if (dataFlag)" << std::endl; 
     dataIndex = number;
     dataFlag = false; 
   }
 
   if (writeFlag) {
+    std::cout << "if (writeFlag)" << std::endl; 
     write(number);
     writeFlag = false; 
   } 
   else {
+    std::cout << "if (else)" << std::endl; 
     D[dataIndex] = number;
   }
 }
@@ -426,7 +457,7 @@ void INTERPRETER::processNumber() {
 void INTERPRETER::handleRecursion() {
   for (int i = 0; i < recursionCounter; i++)
     number = D[number];
-  processNumber();
+  //processNumber();
   recursionCounter = 0; 
   indirectAddressingFlag = false; 
 }

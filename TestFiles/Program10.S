@@ -1,5 +1,4 @@
-set 0, read
-set 10, 20
-set 20, 30
-set D[D[D[0]]], read
+set 0, 10
+set 10, 100
+set write, D[D[0]]
 halt
