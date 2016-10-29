@@ -1,6 +1,6 @@
-3
+5
 Data Segment Contents
-0: 0
+0: 10
 1: 0
 2: 0
 3: 0
@@ -10,7 +10,7 @@ Data Segment Contents
 7: 0
 8: 0
 9: 0
-10: 3
+10: 0
 11: 0
 12: 0
 13: 0

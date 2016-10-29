@@ -1,5 +1,8 @@
-set 10, 3
-jump 3
-set 10, 100
-set write, D[10]
+set 0, read
+jumpt 3, D[0] > 5
+halt
+set write, D[0] / 2
+jumpt 6, D[0] >= 12
+halt
+set write, D[0] / 3
 halt

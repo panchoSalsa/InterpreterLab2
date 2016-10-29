@@ -47,7 +47,11 @@ private:
   int factor = 0; 
   bool mult = false; 
   bool division = false; 
-  bool modulo = false; 
+  bool modulo = false;
+  int jumpDestination = 0; 
+  int left = 0; 
+  int right = 0; 
+  std::string op = ""; 
 
   void printDataSeg();
 
@@ -115,6 +119,9 @@ private:
   void handleDivision();
   void handleModulo();
   void processJump(); 
+  void processJumpt();
+  void assignOperator(const char *s);
+
 };
 
 
@@ -178,7 +185,6 @@ void INTERPRETER::printDataSeg() {
 void INTERPRETER::fetch() {
   // TODO
   // The IR is updated with the instruction pointed at by PC; IR=C[PC]
-  std::cout << "fetch()" << std::endl; 
   IR = C.at(PC);
   curIRIndex = 0; 
 }
@@ -187,12 +193,10 @@ void INTERPRETER::incrementPC() {
   // TODO
   // The PC is incremented to *point* to the next instruction in C; PC = PC+1
   ++PC;
-  std::cout << "incrementPC()" << std::endl; 
 }
 
 void INTERPRETER::execute() {
   // TODO
-  std::cout << "excecute()" << std::endl;
   parseStatement(); 
 }
 
@@ -230,8 +234,11 @@ bool INTERPRETER::accept(char c) {
       handleDivision();
     } else if (c == '%') {
       handleModulo();
-    } 
-
+    } else if (c == '<') {
+      op = "<";
+    } else if (c == '>') {
+      op = ">";
+    }
     return true;
   } else {
     return false;
@@ -257,8 +264,10 @@ bool INTERPRETER::accept(const char *s) {
 
   curIRIndex += s_len;
   skipWhitespace();
+  assignOperator(s);
   return true;
 }
+
 
 /**
  * Checks if the character c is found at the current position in
@@ -294,8 +303,10 @@ void INTERPRETER::parseStatement() {
   }
   else if(accept("set"))
     parseSet();
-  else if(accept("jumpt"))
+  else if(accept("jumpt")) {
     parseJumpt();
+    processJumpt();
+  }
   else if(accept("jump")) {
     parseJump();
     processJump();
@@ -303,26 +314,21 @@ void INTERPRETER::parseStatement() {
 }
 
 void INTERPRETER::parseSet() {
-  std::cerr << "Set" << std::endl;
+  std::cerr << "Set" << std::endl; 
 
   if (!accept("write")) {
-    dataFlag = true; 
     parseExpr();
+    dataIndex = number; 
   } else {
     writeFlag = true; 
   }
 
-  destination();
   expect(',');
 
   if (!accept("read")) { 
     parseExpr();
   } else { 
-    if (writeFlag) 
-      write(INTERPRETER::read());
-    else 
-      D[dataIndex] = INTERPRETER::read(); 
-
+    number = INTERPRETER::read();
   }
 
   assign();
@@ -332,8 +338,6 @@ void INTERPRETER::parseExpr() {
   std::cerr << "Expr" << std::endl;
 
   parseTerm();
-
-  //total = number; 
 
   while (accept('+') || accept('-')) {
     total = number; 
@@ -387,10 +391,6 @@ void INTERPRETER::parseFactor() {
 
     handleRecursion();
 
-    std::cout << "**handled recursion*" << std::endl; 
-    std::cout << "** number: " << number << std::endl; 
-    std::cout << "index: " << dataIndex << std::endl; 
-
   } else if (accept('(')) {
     parseExpr();
 
@@ -443,13 +443,18 @@ void INTERPRETER::parseJumpt() {
 
   parseExpr();
 
+  jumpDestination = number;  
+ 
   expect(',');
 
   parseExpr();
 
+  left = number;  
+
   if (accept("!=") || accept("==") || accept(">=") || accept("<=") ||
       accept('>') || accept('<')) {
     parseExpr();
+    right = number; 
   } else {
     syntaxError();
   }
@@ -466,16 +471,13 @@ void INTERPRETER::halt() {
 
 void INTERPRETER::destination() {
   if (dataFlag) {
-    std::cout << "**dataIndex**" << std::endl; 
     dataIndex = number;
-    std::cout << "dataIndex: " << dataIndex << std::endl; 
     dataFlag = false; 
   }
 }
 
 void INTERPRETER::assign() { 
-  std::cout << "**assign()**" << std::endl; 
-  if (writeFlag) {
+  if (writeFlag) { 
     write(number);
     writeFlag = false; 
   } 
@@ -509,13 +511,57 @@ void INTERPRETER::handleModulo() {
   modulo = true; 
 }
 
-
-
 // ****** Jump
 
 void INTERPRETER::processJump() {
   PC = number; 
-} 
+}
+
+
+// ****** Jumpt
+
+void INTERPRETER::processJumpt() {
+  if (op == "==") {
+    if (left == right) {
+      PC = jumpDestination; 
+    }
+  } else if (op == "!=") {
+    if (left != right) {
+      PC = jumpDestination; 
+    }
+  } else if (op == ">") {
+    if (left > right) {
+      PC = jumpDestination; 
+    }    
+  } else if (op == "<") {
+     if (left < right) {
+      PC = jumpDestination; 
+    }   
+  } else if (op == ">=") {
+    if (left >= right) {
+      PC = jumpDestination; 
+    }  
+  } else if (op == "<=") {
+    if (left <= right) {
+      PC = jumpDestination; 
+    }
+  }
+}
+
+void INTERPRETER::assignOperator(const char *s) {
+  if (s == "==")
+    op = "==";
+  else if (s == "!=")
+    op = "!=";
+  else if (s == "<")
+    op = "<";
+  else if (s == ">")
+    op = ">";
+  else if (s == "<=")
+    op = "<=";
+  else if (s == ">=")
+    op = ">=";
+}
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
