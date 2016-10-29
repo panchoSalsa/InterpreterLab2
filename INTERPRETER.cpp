@@ -1,9 +1,9 @@
 /***************************************
  * INTERPRETER.cpp
  *
- * Student Name: YOUR NAME
- * Student ID: YOUR 8-DIGIT ID
- * UCI Net ID: YOUR UCI-NET ID
+ * Student Name: Francisco Franco
+ * Student ID: 89265601
+ * UCI Net ID: frfranco
  **************************************/
 
 #include <iostream>
